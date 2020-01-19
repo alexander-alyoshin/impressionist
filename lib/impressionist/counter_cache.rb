@@ -60,7 +60,7 @@ module Impressionist
           begin
             yield
           rescue ActiveRecord::RecordNotFound
-            exeception_to_log
+            # exeception_to_log
             false
           end
       end
