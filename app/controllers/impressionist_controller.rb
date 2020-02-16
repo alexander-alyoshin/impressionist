@@ -28,7 +28,7 @@ module ImpressionistController
           if unique_instance?(obj, opts[:unique])
             statement = associative_create_statement(message: message)
 
-            if Impressionist.proxy_storage == :redis && $redis.connected?
+            if Impressionist.proxy_storage == :redis && ($redis.connected? || $redis.ping == 'PONG')
               $redis.lpush('impressionist', statement.to_json)
             else
               obj.impressions.create(statement)
