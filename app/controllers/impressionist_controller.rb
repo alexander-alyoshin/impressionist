@@ -25,12 +25,11 @@ module ImpressionistController
     def impressionist(obj, message = nil, opts = {})
       if should_count_impression?(opts)
         if obj.respond_to?('impressionable?')
-          if unique_instance?(obj, opts[:unique])
-            statement = associative_create_statement(message: message)
-
-            if Impressionist.proxy_storage == :redis && ($redis.connected? || $redis.ping == 'PONG')
-              $redis.lpush('impressionist', statement.to_json)
-            else
+          if Impressionist.proxy_storage == :redis && ($redis.connected? || $redis.ping == 'PONG')
+            $redis.lpush('impressionist', {obj_class: obj.class, obj_id: obj.id, statement: statement}.to_json)
+          else
+            if unique_instance?(obj, opts[:unique])
+              statement = associative_create_statement(message: message)
               obj.impressions.create(statement)
             end
           end
